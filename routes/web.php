@@ -8,6 +8,7 @@ use App\Http\Controllers\PartController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\DetailPurchaseOrderController;
 use App\Http\Controllers\SuratJalanController;
 
 // ========== ROUTE UTAMA ==========
@@ -82,6 +83,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
         Route::get('/{purchase_order}/print', [PurchaseOrderController::class, 'print'])->name('print');
     });
+
+   // Detail PO Routes - SESUAIKAN DENGAN FOLDER detailpo/
+Route::prefix('detailpo')->name('detailpo.')->group(function () {
+    // Untuk tambah item baru ke PO tertentu
+    Route::get('/create/{nopo}', [DetailPurchaseOrderController::class, 'create'])->name('create');
+    Route::post('/store/{nopo}', [DetailPurchaseOrderController::class, 'store'])->name('store');
+    
+    // Untuk edit item
+    Route::get('/{nopo}/{nopart}/edit', [DetailPurchaseOrderController::class, 'edit'])->name('edit');
+    Route::put('/{nopo}/{nopart}', [DetailPurchaseOrderController::class, 'update'])->name('update');
+    
+    // Untuk hapus item
+    Route::delete('/{nopo}/{nopart}', [DetailPurchaseOrderController::class, 'destroy'])->name('destroy');
+    
+    // Untuk lihat semua detail (index) - OPTIONAL
+    Route::get('/{nopo}', [DetailPurchaseOrderController::class, 'index'])->name('index');
+});
     
     // Surat Jalan routes
     Route::prefix('surat-jalan')->name('suratjalan.')->group(function () {
