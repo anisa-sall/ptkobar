@@ -49,6 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{part}/edit', [PartController::class, 'edit'])->name('edit');
         Route::put('/{part}', [PartController::class, 'update'])->name('update');
         Route::delete('/{part}', [PartController::class, 'destroy'])->name('destroy');
+        
+
     });
     
     // Petugas routes

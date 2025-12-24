@@ -351,11 +351,13 @@
                     @csrf
                       @method('PUT') 
                     <div class="form-group">
-                      <label for="nopart">Nomor Part</label>
-                      <input type="text" class="form-control" id="nopart" name="nopart" 
-                            value="{{ old('nopart', $part->nopart) }}" 
-                            placeholder="Nomor Part" required>
-                    </div>
+  <label for="nopart">Nomor Part</label>
+  <input type="text" class="form-control" id="nopart" name="nopart" 
+        value="{{ old('nopart', $part->nopart) }}" 
+        placeholder="Nomor Part" 
+        readonly
+        style="background-color: #f4f5f7;"> <!-- warna abu-abu -->
+</div>
                     <div class="form-group">
                       <label for="namapart">Nama Part</label>
                       <input type="text" class="form-control" id="namapart" name="namapart" 
@@ -369,7 +371,7 @@
                             placeholder="Contoh: 1.500.000" pattern="[0-9.,]+" required>
                     </div>
                     <button type="submit" class="btn btn-primary me-2">Update</button>
-                   <a href="{{ url('/part/lihat') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('part.index') }}" class="btn btn-secondary">Cancel</a>
                   </form>
                 </div>
               </div>
