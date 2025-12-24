@@ -254,9 +254,14 @@
                     <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
                 </div>
                 <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
-                    <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
-                    <a href="?logout=true" class="btn btn-primary btn-sm rounded-1">Logout</a>
-                </div>
+                <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
+                
+                <!-- UBAH INI: dari <a> tag menjadi form -->
+                <form method="POST" action="{{ route('logout') }}" id="logoutForm" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm rounded-1">Logout</button>
+                </form>
+            </div>
             </div>
         </div>
     </div>
@@ -266,7 +271,7 @@
       <nav class="sidebar sidebar-offcanvas sidebar-dark" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('/dashboard') }}">
+            <a class="nav-link" href="{{ route('dashboard') }}">
               <i class="mdi mdi-grid-large menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
@@ -297,7 +302,7 @@
           
           @if(hasAccess('customer', $departemen, $menuAccess))
           <li class="nav-item" id="customer-menu">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="{{ route('customer.index') }}">
                   <i class="menu-icon mdi mdi-account-search"></i>
                   <span class="menu-title">Customer</span>
               </a>
@@ -306,7 +311,7 @@
           
           @if(hasAccess('part', $departemen, $menuAccess))
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('part.index') }}">
               <i class="menu-icon mdi mdi mdi-cube-outline"></i>
               <span class="menu-title">Part</span>
             </a>
@@ -315,7 +320,7 @@
           
           @if(hasAccess('petugas', $departemen, $menuAccess))
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('users.index') }}">
               <i class="menu-icon mdi mdi-account-check"></i>
               <span class="menu-title">Petugas</span>
             </a>
@@ -333,45 +338,18 @@
           
           @if(hasAccess('po', $departemen, $menuAccess))
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('po.index') }}">
               <i class="menu-icon mdi mdi-file-document"></i>
               <span class="menu-title">Purchase Order</span>
             </a>
           </li>
           @endif
           
-          @if(hasAccess('stok', $departemen, $menuAccess))
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i class="menu-icon mdi mdi-checkbox-marked-outline"></i>
-              <span class="menu-title">Stok Part</span>
-            </a>
-          </li>
-          @endif
-          
           @if(hasAccess('suratjalan', $departemen, $menuAccess))
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('suratjalan.index') }}">
               <i class="menu-icon mdi mdi-file-find"></i>
               <span class="menu-title">Surat Jalan</span>
-            </a>
-          </li>
-          @endif
-          
-          @if(hasAccess('invoice', $departemen, $menuAccess))
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i class="menu-icon mdi mdi-file-multiple"></i>
-              <span class="menu-title">Invoice</span>
-            </a>
-          </li>
-          @endif
-          
-          @if(hasAccess('laporan', $departemen, $menuAccess))
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i class="menu-icon mdi mdi-printer"></i>
-              <span class="menu-title">Laporan Penjualan</span>
             </a>
           </li>
           @endif

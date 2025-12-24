@@ -38,9 +38,9 @@ class PartController extends Controller
         // Clear session messages after displaying
         Session::forget(['success', 'success_type', 'error', 'error_type']);
         
-        // Get user data
+        // Get user data - PERBAIKAN: gunakan name bukan namapetugas
         $user = Auth::user();
-        $namapetugas = $user->namapetugas ?? 'Petugas';
+        $namapetugas = $user->name ?? 'Petugas'; // Ganti namapetugas dengan name
         $email = $user->email ?? 'email@example.com';
         $departemen = $user->departemen ?? '';
         $namadepan = explode(' ', $namapetugas)[0];
@@ -52,9 +52,7 @@ class PartController extends Controller
             'petugas' => ['Manager'],
             'kendaraan' => ['PPIC', 'Manager'],
             'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-           
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
-           
         ];
         
         return view('part.index', compact(
@@ -81,9 +79,9 @@ class PartController extends Controller
             return redirect()->route('login');
         }
         
-        // Get user data
+        // Get user data - PERBAIKAN: gunakan name bukan namapetugas
         $user = Auth::user();
-        $namapetugas = $user->namapetugas ?? 'Petugas';
+        $namapetugas = $user->name ?? 'Petugas'; // Ganti namapetugas dengan name
         $email = $user->email ?? 'email@example.com';
         $departemen = $user->departemen ?? '';
         $namadepan = explode(' ', $namapetugas)[0];
@@ -95,9 +93,7 @@ class PartController extends Controller
             'petugas' => ['Manager'],
             'kendaraan' => ['PPIC', 'Manager'],
             'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-        
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
-           
         ];
         
         return view('part.create', compact(
@@ -113,25 +109,28 @@ class PartController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nopart'   => 'required|unique:part,nopart',
-        'namapart' => 'required',
-        'harga'    => 'required',
-    ]);
+    {
+        $request->validate([
+            'nopart'   => 'required|unique:part,nopart',
+            'namapart' => 'required',
+            'harga'    => 'required',
+        ]);
 
-    // BERSIHKAN FORMAT RUPIAH
-    $harga = preg_replace('/[^0-9]/', '', $request->harga);
+        // BERSIHKAN FORMAT RUPIAH
+        $harga = preg_replace('/[^0-9]/', '', $request->harga);
 
-    Part::create([
-        'nopart'   => $request->nopart,
-        'namapart' => $request->namapart,
-        'harga'    => $harga,
-    ]);
+        Part::create([
+            'nopart'   => $request->nopart,
+            'namapart' => $request->namapart,
+            'harga'    => $harga,
+        ]);
 
-    return redirect()->route('part.index')
-        ->with('success', 'Part berhasil ditambahkan');
-}
+        return redirect()->route('part.index')
+            ->with([
+                'success' => 'Part berhasil ditambahkan',
+                'success_type' => 'global'  // TAMBAHKAN INI
+            ]);
+    }
     
     /**
      * Show the form for editing the specified resource.
@@ -144,9 +143,9 @@ class PartController extends Controller
         
         $part = Part::where('nopart', $id)->firstOrFail();
         
-        // Get user data
+        // Get user data - PERBAIKAN: gunakan name bukan namapetugas
         $user = Auth::user();
-        $namapetugas = $user->namapetugas ?? 'Petugas';
+        $namapetugas = $user->name ?? 'Petugas'; // Ganti namapetugas dengan name
         $email = $user->email ?? 'email@example.com';
         $departemen = $user->departemen ?? '';
         $namadepan = explode(' ', $namapetugas)[0];
@@ -158,9 +157,7 @@ class PartController extends Controller
             'petugas' => ['Manager'],
             'kendaraan' => ['PPIC', 'Manager'],
             'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-     
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
-           
         ];
         
         return view('part.edit', compact(

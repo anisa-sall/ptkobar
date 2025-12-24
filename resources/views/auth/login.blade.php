@@ -99,7 +99,6 @@
                             <option value="" disabled selected>Pilih Departemen</option>
                             <option value="Marketing" {{ old('departemen') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
                             <option value="PPIC" {{ old('departemen') == 'PPIC' ? 'selected' : '' }}>PPIC (Production Planning & Inventory Control)</option>
-                            <option value="Finance" {{ old('departemen') == 'Finance' ? 'selected' : '' }}>Finance</option>
                             <option value="Manager" {{ old('departemen') == 'Manager' ? 'selected' : '' }}>Manager</option>
                         </select>
                         <x-input-error :messages="$errors->get('departemen')" class="mt-2" />
@@ -115,14 +114,6 @@
                                         required autocomplete="current-password" />
 
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                    </div>
-
-                    <!-- Remember Me -->
-                    <div class="block mt-4">
-                        <label for="remember_me" class="inline-flex items-center">
-                            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                            <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                        </label>
                     </div>
 
                     <div class="flex items-center justify-end mt-4">

@@ -265,9 +265,14 @@
                     <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
                 </div>
                 <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
-                    <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
-                    <a href="{{ route('logout') }}" class="btn btn-primary btn-sm rounded-1">Logout</a>
-                </div>
+                <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
+                
+                <!-- UBAH INI: dari <a> tag menjadi form -->
+                <form method="POST" action="{{ route('logout') }}" id="logoutForm" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm rounded-1">Logout</button>
+                </form>
+            </div>
             </div>
         </div>
     </div>
@@ -300,7 +305,7 @@
           @endif
           @if(isset($menuAccess['petugas']) && in_array($departemen, $menuAccess['petugas']))
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('petugas.index') }}">
+            <a class="nav-link" href="{{ route('users.index') }}">
               <i class="menu-icon mdi mdi-account-check"></i>
               <span class="menu-title">Petugas</span>
             </a>

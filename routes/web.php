@@ -5,15 +5,23 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PartController;
-use App\Http\Controllers\PetugasController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\DetailPoController;
 use App\Http\Controllers\SuratJalanController;
+use App\Http\Controllers\DetailSuratJalanController;
 
 // ========== ROUTE UTAMA ==========
 Route::get('/', function () {
     return view('welcome'); // PASTIKAN mengarah ke welcome.blade.php
 })->name('home');
+
+// User routes dengan middleware auth
+Route::middleware(['auth'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 // ========== OVERRIDE AUTH ROUTES ==========
 // Login routes
@@ -50,16 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{part}', [PartController::class, 'update'])->name('update');
         Route::delete('/{part}', [PartController::class, 'destroy'])->name('destroy');
     });
-    
-    // Petugas routes
-    Route::prefix('petugas')->name('petugas.')->group(function () {
-        Route::get('/', [PetugasController::class, 'index'])->name('index');
-        Route::get('/create', [PetugasController::class, 'create'])->name('create');
-        Route::post('/', [PetugasController::class, 'store'])->name('store');
-        Route::get('/{petugas}/edit', [PetugasController::class, 'edit'])->name('edit');
-        Route::put('/{petugas}', [PetugasController::class, 'update'])->name('update');
-        Route::delete('/{petugas}', [PetugasController::class, 'destroy'])->name('destroy');
-    });
+
     
     // Kendaraan routes
     Route::prefix('kendaraan')->name('kendaraan.')->group(function () {
@@ -72,16 +71,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
     
     // Purchase Order routes
-    Route::prefix('purchase-order')->name('po.')->group(function () {
-        Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
-        Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
-        Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
-        Route::get('/{purchase_order}', [PurchaseOrderController::class, 'show'])->name('show');
-        Route::get('/{purchase_order}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
-        Route::put('/{purchase_order}', [PurchaseOrderController::class, 'update'])->name('update');
-        Route::delete('/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
-        Route::get('/{purchase_order}/print', [PurchaseOrderController::class, 'print'])->name('print');
-    });
+// 1. ROUTE DETAILPO DULU (lebih spesifik)
+Route::prefix('purchase-order/{nopo}/detail')->name('detailpo.')
+    ->where(['nopo' => '.*'])
+    ->group(function () {
+        Route::get('/', [DetailPoController::class, 'index'])->name('index');
+        Route::get('/create', [DetailPoController::class, 'create'])->name('create');
+        Route::post('/', [DetailPoController::class, 'store'])->name('store');
+        Route::get('/{nopart}/edit', [DetailPoController::class, 'edit'])->name('edit');
+        Route::put('/{nopart}', [DetailPoController::class, 'update'])->name('update');
+        Route::delete('/{nopart}', [DetailPoController::class, 'destroy'])->name('destroy');
+    })->middleware('auth');
+
+// 2. ROUTE PO SETELAHNYA (kurang spesifik)
+Route::prefix('purchase-order')->name('po.')->group(function () {
+    Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
+    Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
+    Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
+    
+    // Route PO lainnya DENGAN .* pattern
+    Route::get('/{nopo}/edit', [PurchaseOrderController::class, 'edit'])->name('edit')->where('nopo', '.*');
+    Route::get('/{nopo}/details', [PurchaseOrderController::class, 'getDetails'])->name('details')->where('nopo', '.*');
+    Route::put('/{nopo}', [PurchaseOrderController::class, 'update'])->name('update')->where('nopo', '.*');
+    Route::delete('/{nopo}', [PurchaseOrderController::class, 'destroy'])->name('destroy')->where('nopo', '.*');
+})->middleware('auth');
     
     // Surat Jalan routes
     Route::prefix('surat-jalan')->name('suratjalan.')->group(function () {
@@ -92,8 +105,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{surat_jalan}/edit', [SuratJalanController::class, 'edit'])->name('edit');
         Route::put('/{surat_jalan}', [SuratJalanController::class, 'update'])->name('update');
         Route::delete('/{surat_jalan}', [SuratJalanController::class, 'destroy'])->name('destroy');
-        Route::get('/{surat_jalan}/print', [SuratJalanController::class, 'print'])->name('print');
-    });
+        Route::get('/{surat_jalan}/cetak', [SuratJalanController::class, 'cetak'])->name('cetak');
+        Route::get('/get-pos/{idcustomer}', [SuratJalanController::class, 'getPosByCustomer'])->name('get-pos');
+    })->middleware('auth');
+
+    Route::prefix('surat-jalan/{nosuratjalan}/detail')->name('detailsuratjalan.')->group(function () {
+        Route::get('/', [DetailSuratJalanController::class, 'index'])->name('index');
+        Route::get('/create', [DetailSuratJalanController::class, 'create'])->name('create');
+        Route::post('/', [DetailSuratJalanController::class, 'store'])->name('store');
+        Route::get('/{nopart}/edit', [DetailSuratJalanController::class, 'edit'])->name('edit');
+        Route::put('/{nopart}', [DetailSuratJalanController::class, 'update'])->name('update');
+        Route::delete('/{nopart}', [DetailSuratJalanController::class, 'destroy'])->name('destroy');
+    })->middleware('auth');
+    
 });
 
 // ========== AUTH ROUTES (JANGAN GUNAKAN require) ==========

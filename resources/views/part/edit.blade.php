@@ -229,11 +229,11 @@
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown border-0" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" src="{{ asset('images/faces/face30.png') }}" alt="Profile image">
-             
-               
+                <p class="mb-1 mt-3 font-weight-semibold">{{ $namapetugas }}</p>
+                <p class="fw-light text-muted mb-0">{{ $email }}</p>
               </div>
               <a class="dropdown-item" style="border-bottom: none;" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                  <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out
+                <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out
               </a>
             </div>
           </li>
@@ -245,21 +245,26 @@
     </nav>
     <!-- MODAL KONFIRMASI LOGOUT -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 0 auto;">
-            <div class="modal-content" style="max-height: 200px; overflow: hidden;">
-                <div class="modal-header py-2" style="border-bottom: 1px solid #dee2e6;">
-                    <h6 class="modal-title fs-6 m-0">Konfirmasi Logout</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body py-2">
-                    <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
-                </div>
-                <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
-                    <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
-                    <a href="{{ route('logout') }}" class="btn btn-primary btn-sm rounded-1">Logout</a>
-                </div>
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 0 auto;">
+        <div class="modal-content" style="max-height: 200px; overflow: hidden;">
+          <div class="modal-header py-2" style="border-bottom: 1px solid #dee2e6;">
+            <h6 class="modal-title fs-6 m-0">Konfirmasi Logout</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-2">
+            <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
+          </div>
+          <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
+                <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
+                
+                <!-- UBAH INI: dari <a> tag menjadi form -->
+                <form method="POST" action="{{ route('logout') }}" id="logoutForm" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm rounded-1">Logout</button>
+                </form>
             </div>
         </div>
+      </div>
     </div>
     <!-- partial -->
    <div class="container-fluid page-body-wrapper">
@@ -292,7 +297,7 @@
 
     @if(isset($menuAccess['petugas']) && in_array($departemen, $menuAccess['petugas']))
     <li class="nav-item">
-      <a class="nav-link" href="{{ route('petugas.index') }}">
+      <a class="nav-link" href="{{ route('users.index') }}">
         <i class="menu-icon mdi mdi-account-check"></i>
         <span class="menu-title">Petugas</span>
       </a>
@@ -369,7 +374,9 @@
                             placeholder="Contoh: 1.500.000" pattern="[0-9.,]+" required>
                     </div>
                     <button type="submit" class="btn btn-primary me-2">Update</button>
-                   <a href="{{ url('/part/lihat') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('part.index') }}" class="btn btn-secondary">
+                      Cancel
+                    </a>
                   </form>
                 </div>
               </div>

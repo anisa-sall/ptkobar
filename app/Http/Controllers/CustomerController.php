@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Petugas;
+use App\Models\User; 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +24,11 @@ class CustomerController extends Controller
         $customers = Customer::orderBy('namacustomer')
             ->paginate($records_per_page);
         
-        // Get petugas data
-        $petugas = Petugas::find(Auth::id());
-        $namapetugas = $petugas ? $petugas->namapetugas : 'Petugas';
-        $email = $petugas ? $petugas->email : 'email@example.com';
+        // Get user data dari table users (Auth::user())
+        $user = Auth::user();
+        $namapetugas = $user ? $user->name : 'Petugas'; // Ganti namapetugas dengan name
+        $email = $user ? $user->email : 'email@example.com';
+        $departemen = $user ? $user->departemen : '';
         
         // Get session messages
         $error = Session::get('error');
@@ -48,8 +49,6 @@ class CustomerController extends Controller
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
         ];
         
-        $departemen = Auth::user()->departemen ?? '';
-        
         return view('customer.index', compact(
             'customers',
             'namapetugas',
@@ -66,6 +65,12 @@ class CustomerController extends Controller
 
     public function create()
     {
+        // Get user data
+        $user = Auth::user();
+        $namapetugas = $user ? $user->name : 'Petugas';
+        $email = $user ? $user->email : 'email@example.com';
+        $departemen = $user ? $user->departemen : '';
+        
         // Menu access tanpa invoice, laporan, stok
         $menuAccess = [
             'customer' => ['Marketing', 'Manager'],
@@ -76,9 +81,7 @@ class CustomerController extends Controller
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
         ];
 
-        $departemen = Auth::user()->departemen ?? '';
-
-        return view('customer.create', compact('menuAccess', 'departemen'));
+        return view('customer.create', compact('menuAccess', 'departemen', 'namapetugas', 'email'));
     }
 
     public function store(Request $request)
@@ -111,6 +114,12 @@ class CustomerController extends Controller
         // Optional: jika ingin menampilkan detail customer
         $customer = Customer::findOrFail($id);
 
+        // Get user data
+        $user = Auth::user();
+        $namapetugas = $user ? $user->name : 'Petugas';
+        $email = $user ? $user->email : 'email@example.com';
+        $departemen = $user ? $user->departemen : '';
+        
         // Menu access tanpa invoice, laporan, stok
         $menuAccess = [
             'customer' => ['Marketing', 'Manager'],
@@ -121,15 +130,19 @@ class CustomerController extends Controller
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
         ];
 
-        $departemen = Auth::user()->departemen ?? '';
-
-        return view('customer.show', compact('customer', 'menuAccess', 'departemen'));
+        return view('customer.show', compact('customer', 'menuAccess', 'departemen', 'namapetugas', 'email'));
     }
 
     public function edit($id)
     {
         $customer = Customer::findOrFail($id);
 
+        // Get user data
+        $user = Auth::user();
+        $namapetugas = $user ? $user->name : 'Petugas';
+        $email = $user ? $user->email : 'email@example.com';
+        $departemen = $user ? $user->departemen : '';
+        
         // Menu access tanpa invoice, laporan, stok
         $menuAccess = [
             'customer' => ['Marketing', 'Manager'],
@@ -140,9 +153,7 @@ class CustomerController extends Controller
             'suratjalan' => ['PPIC', 'Finance', 'Manager'],
         ];
 
-        $departemen = Auth::user()->departemen ?? '';
-
-        return view('customer.edit', compact('customer', 'menuAccess', 'departemen'));
+        return view('customer.edit', compact('customer', 'menuAccess', 'departemen', 'namapetugas', 'email'));
     }
 
     public function update(Request $request, $id)
@@ -199,7 +210,31 @@ class CustomerController extends Controller
             ->orderBy('namacustomer')
             ->paginate($records_per_page);
         
-        return view('customer.index', compact('customers', 'search', 'records_per_page'));
+        // Get user data
+        $user = Auth::user();
+        $namapetugas = $user ? $user->name : 'Petugas';
+        $email = $user ? $user->email : 'email@example.com';
+        $departemen = $user ? $user->departemen : '';
+        
+        // Menu access
+        $menuAccess = [
+            'customer' => ['Marketing', 'Manager'],
+            'part' => ['Marketing', 'Manager'],
+            'petugas' => ['Manager'],
+            'kendaraan' => ['PPIC', 'Manager'],
+            'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
+            'suratjalan' => ['PPIC', 'Finance', 'Manager'],
+        ];
+        
+        return view('customer.index', compact(
+            'customers', 
+            'search', 
+            'records_per_page',
+            'menuAccess',
+            'departemen',
+            'namapetugas',
+            'email'
+        ));
     }
 
     public function logout()

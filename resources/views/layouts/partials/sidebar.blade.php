@@ -31,7 +31,7 @@
         <!-- Petugas - hanya untuk Manager -->
         @if(isset($menuAccess['petugas']) && in_array($departemen, $menuAccess['petugas']))
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('petugas.*') ? 'active' : '' }}" href="{{ route('petugas.index') }}">
+            <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                 <i class="menu-icon mdi mdi-account-check"></i>
                 <span class="menu-title">Petugas</span>
             </a>

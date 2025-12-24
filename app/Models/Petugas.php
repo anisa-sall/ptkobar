@@ -9,6 +9,13 @@ class Petugas extends Model
 {
     use HasFactory;
 
-    protected $table = 'petugas'; // pastikan sesuai nama tabel
-    protected $primaryKey = 'idpetugas'; // kalau bukan id
+    protected $table = 'petugas';
+    protected $primaryKey = 'idpetugas';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'namapetugas',
+        'email',
+        'departemen'
+    ];
 }

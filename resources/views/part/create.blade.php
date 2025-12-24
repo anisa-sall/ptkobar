@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Part - PT. Kobar Indonesia</title>
+  <title>Tambah Part - PT. Kobar Indonesia</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{ asset('vendors/feather/feather.css') }}">
   <link rel="stylesheet" href="{{ asset('vendors/mdi/css/materialdesignicons.min.css') }}">
@@ -14,130 +14,125 @@
   <link rel="stylesheet" href="{{ asset('vendors/simple-line-icons/css/simple-line-icons.css') }}">
   <link rel="stylesheet" href="{{ asset('vendors/css/vendor.bundle.base.css') }}">
   <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('css/vertical-layout-light/style.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" type="image/png" href="{{ asset('images/ptkobarnobgnew.png') }}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <style>
-  .sidebar {
-    background: #232227 !important;
-    background-color: #232227 !important;
-    color: #ffffff !important;
-  }
+    .sidebar {
+      background: #232227 !important;
+      background-color: #232227 !important;
+      color: #ffffff !important;
+    }
 
-  .sidebar .nav-link {
-    color: #ffffff !important;
-  }
+    .sidebar .nav-link {
+      color: #ffffff !important;
+    }
 
-  .sidebar .nav-item.active .nav-link {
-    background: rgba(255,255,255,0.1) !important;
-  }
+    .sidebar .nav-item.active .nav-link {
+      background: rgba(255,255,255,0.1) !important;
+    }
 
-  .sidebar .menu-icon {
-  color: #ffffff !important;
-  }
+    .sidebar .menu-icon {
+      color: #ffffff !important;
+    }
 
-  .sidebar .menu-arrow {
-    color: #ffffff !important;
-  }
+    .sidebar .menu-arrow {
+      color: #ffffff !important;
+    }
 
-  /* Category text */
-  .sidebar .nav-category {
-    color: rgba(255, 255, 255, 0.7) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-  }
+    /* Category text */
+    .sidebar .nav-category {
+      color: rgba(255, 255, 255, 0.7) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
 
-  /* PERBAIKAN UNTUK HAMBURGER MENU */
-
-  /* Pastikan selector lebih spesifik */
-  .sidebar .nav-item.active > .nav-link {
+    /* PERBAIKAN UNTUK HAMBURGER MENU */
+    /* Pastikan selector lebih spesifik */
+    .sidebar .nav-item.active > .nav-link {
       border-left-color: #0025f7ab  !important;
       background: rgba(255, 255, 255, 0.05) !important;
       color: #ffffff !important;
-  }
+    }
 
-  /* Untuk icon dan text dalam state active */
-  .sidebar .nav-item.active > .nav-link .menu-icon,
-  .sidebar .nav-item.active > .nav-link .menu-title,
-  .sidebar .nav-item.active > .nav-link .menu-arrow {
+    /* Untuk icon dan text dalam state active */
+    .sidebar .nav-item.active > .nav-link .menu-icon,
+    .sidebar .nav-item.active > .nav-link .menu-title,
+    .sidebar .nav-item.active > .nav-link .menu-arrow {
       color: #ffffff !important;
-  }
+    }
 
-  /* Jika hamburger menu menggunakan class berbeda */
-  .sidebar.mobile-sidebar .nav-item.active .nav-link,
-  .sidebar.sidebar-collapse .nav-item.active .nav-link,
-  .sidebar.show .nav-item.active .nav-link {
+    /* Jika hamburger menu menggunakan class berbeda */
+    .sidebar.mobile-sidebar .nav-item.active .nav-link,
+    .sidebar.sidebar-collapse .nav-item.active .nav-link,
+    .sidebar.show .nav-item.active .nav-link {
       border-left-color: #0025f7ab  !important;
       background: rgba(255, 255, 255, 0.05) !important;
-      
-  }
+    }
 
-  /* Tambahkan juga untuk sub-menu items */
-  .sidebar .sub-menu .nav-item.active .nav-link {
+    /* Tambahkan juga untuk sub-menu items */
+    .sidebar .sub-menu .nav-item.active .nav-link {
       border-left-color: #0025f7ab  !important;
       background: rgba(255, 255, 255, 0.05) !important;
-  }
+    }
 
-  /* HOVER EFFECT - PUTIH TRANSPARAN SEPERTI DI GAMBAR */
-  .sidebar .nav-item:hover .nav-link {
+    /* HOVER EFFECT - PUTIH TRANSPARAN SEPERTI DI GAMBAR */
+    .sidebar .nav-item:hover .nav-link {
       background: rgba(255, 255, 255, 0.05) !important;
       color: #0025f7ab !important;
       border-left-color: #ffffff !important;
-  }
+    }
 
-  .sidebar .menu-title {
-    font-weight: bold !important;
-  }
-  
-  /* Hanya target menu title saja */
-  .sidebar .nav-item.active > .nav-link:hover .menu-title {
+    .sidebar .menu-title {
+      font-weight: bold !important;
+    }
+    
+    /* Hanya target menu title saja */
+    .sidebar .nav-item.active > .nav-link:hover .menu-title {
       color: #0824c2e1 !important;
-  }
+    }
 
-  /* Pastikan icon dan arrow tetap putih */
-  .sidebar .nav-item.active > .nav-link:hover .menu-icon,
-  .sidebar .nav-item.active > .nav-link:hover .menu-arrow {
+    /* Pastikan icon dan arrow tetap putih */
+    .sidebar .nav-item.active > .nav-link:hover .menu-icon,
+    .sidebar .nav-item.active > .nav-link:hover .menu-arrow {
       color: #ffffff !important;
-  }
+    }
 
-  /* Menu title saat hamburger menu aktif (terbuka) */
-  .sidebar.show .nav-item:hover .menu-title {
+    /* Menu title saat hamburger menu aktif (terbuka) */
+    .sidebar.show .nav-item:hover .menu-title {
       color: #ffffff !important;
-  }
+    }
 
-  /* Menu icon saat hamburger menu aktif (terbuka) */
-  .sidebar.show .nav-item:hover .menu-icon {
+    /* Menu icon saat hamburger menu aktif (terbuka) */
+    .sidebar.show .nav-item:hover .menu-icon {
       color: #ffffff !important;
-  }
+    }
 
-  /* Untuk sub-menu items pada hover */
-  .sidebar .sub-menu .nav-item:hover .nav-link {
+    /* Untuk sub-menu items pada hover */
+    .sidebar .sub-menu .nav-item:hover .nav-link {
       background: rgba(255, 255, 255, 0.05) !important;
       color: #0025f7ab !important;
-      
-  }
-  
-  /* SUPER MINIMAL - ONLY BORDER CHANGE */
-  .sidebar .nav-item .nav-link {
-    transition: border-left 0.2s ease !important;
-    border-left: 3px solid transparent !important;
-    border-radius: 0 !important;
-  }
+    }
+    
+    /* SUPER MINIMAL - ONLY BORDER CHANGE */
+    .sidebar .nav-item .nav-link {
+      transition: border-left 0.2s ease !important;
+      border-left: 3px solid transparent !important;
+      border-radius: 0 !important;
+    }
 
-  .sidebar .nav-item:hover .nav-link {
-    border-left-color: #ffffff !important;
-  }
+    .sidebar .nav-item:hover .nav-link {
+      border-left-color: #ffffff !important;
+    }
 
-  .sidebar .nav-item.active .nav-link {
-    border-left-color: #0025f7ab !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-  }
+    .sidebar .nav-item.active .nav-link {
+      border-left-color: #0025f7ab !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
 
     /* STYLE UNTUK NOTIFIKASI GLOBAL (KHUSUS DUA NOTIFIKASI) */
-  .alert-global {
+    .alert-global {
       padding: 12px 16px;
       margin: 0 0 20px 0;
       border-radius: 8px;
@@ -148,37 +143,37 @@
       gap: 8px;
       border: 1px solid;
       animation: slideDown 0.3s ease-out;
-  }
+    }
 
-  .alert-global.error {
+    .alert-global.error {
       background: #FEF2F2;
       color: #DC2626;
       border-color: #FECACA;
-  }
+    }
 
-  .alert-global.success {
+    .alert-global.success {
       background: #F0FDF4;
       color: #16A34A;
       border-color: #BBF7D0;
-  }
+    }
 
-  .alert-global i {
+    .alert-global i {
       font-size: 16px;
-  }
+    }
 
-  @keyframes slideDown {
+    @keyframes slideDown {
       from {
-          opacity: 0;
-          transform: translateY(-10px);
+        opacity: 0;
+        transform: translateY(-10px);
       }
       to {
-          opacity: 1;
-          transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
       }
-  }
+    }
 
-  /* STYLE DEFAULT UNTUK NOTIFIKASI LAINNYA */
-  .alert-default {
+    /* STYLE DEFAULT UNTUK NOTIFIKASI LAINNYA */
+    .alert-default {
       padding: 0;
       margin: 0 0 16px 0;
       font-size: 14px;
@@ -186,17 +181,12 @@
       color: #dc2626;
       text-align: center;
       animation: fadeIn 0.3s ease-out;
-  }
+    }
 
-  @keyframes fadeIn {
+    @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
-  }
-  /* Ubah ukuran font header tabel saja */
-  #partTable thead th {
-      font-size: 0.70rem;
-  }
-  
+    }
   </style>
 </head>
 
@@ -222,7 +212,6 @@
       <div class="navbar-menu-wrapper d-flex align-items-top"> 
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-            <!-- <h2 class="welcome-text text-white">PT. Kobar Indonesia</span></h2> -->
             <h3 class="welcome-text text-white fw-bold">PT. Kobar Indonesia</h3>
             <h4 class="welcome-sub-text text-light"> Sustainable Metal Solutions for Your Supply Reliability </h4>
           </li>
@@ -233,16 +222,12 @@
               <img class="img-xs rounded-circle" src="{{ asset('images/faces/face30.png') }}" alt="Profile image"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown border-0" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-               
-                
-                <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" src="{{ asset('images/faces/face30.png') }}" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold">{{ $namapetugas }}</p>
                 <p class="fw-light text-muted mb-0">{{ $email }}</p>
               </div>
-              </div>
               <a class="dropdown-item" style="border-bottom: none;" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                  <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out
+                <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out
               </a>
             </div>
           </li>
@@ -255,21 +240,26 @@
 
     <!-- MODAL KONFIRMASI LOGOUT -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 0 auto;">
-            <div class="modal-content" style="max-height: 200px; overflow: hidden;">
-                <div class="modal-header py-2" style="border-bottom: 1px solid #dee2e6;">
-                    <h6 class="modal-title fs-6 m-0">Konfirmasi Logout</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body py-2">
-                    <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
-                </div>
-                <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
-                    <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
-                    <a href="{{ route('logout') }}" class="btn btn-primary btn-sm rounded-1">Logout</a>
-                </div>
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 0 auto;">
+        <div class="modal-content" style="max-height: 200px; overflow: hidden;">
+          <div class="modal-header py-2" style="border-bottom: 1px solid #dee2e6;">
+            <h6 class="modal-title fs-6 m-0">Konfirmasi Logout</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body py-2">
+            <p class="m-0">Yakin ingin keluar dari aplikasi?</p>
+          </div>
+          <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
+                <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
+                
+                <!-- UBAH INI: dari <a> tag menjadi form -->
+                <form method="POST" action="{{ route('logout') }}" id="logoutForm" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm rounded-1">Logout</button>
+                </form>
             </div>
         </div>
+      </div>
     </div>
 
     <!-- partial -->
@@ -293,14 +283,14 @@
           @if(isset($menuAccess['part']) && in_array($departemen, $menuAccess['part']))
           <li class="nav-item active">
             <a class="nav-link" href="{{ route('part.index') }}">
-              <i class="menu-icon mdi mdi mdi-cube-outline"></i>
+              <i class="menu-icon mdi mdi-cube-outline"></i>
               <span class="menu-title">Part</span>
             </a>
           </li>
           @endif
           @if(isset($menuAccess['petugas']) && in_array($departemen, $menuAccess['petugas']))
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('petugas.index') }}">
+            <a class="nav-link" href="{{ route('users.index') }}">
               <i class="menu-icon mdi mdi-account-check"></i>
               <span class="menu-title">Petugas</span>
             </a>
@@ -332,173 +322,114 @@
           @endif
         </ul>
       </nav>
+      
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-            <div class="col-sm-12 grid-margin-sm stretch-card">
+            <div class="col-sm-12">
               <div class="card">
                 <div class="card-body">                 
                   <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                      <h4 class="card-title">Data Part</h4>
+                      <h4 class="card-title">Tambah Part</h4>
                       <p class="card-description mb-0">
-                        Halaman Data Part PT. Kobar Indonesia
+                        Form tambah data part PT. Kobar Indonesia
                       </p>
-                    </div>
-                    <a href="{{ route('part.create') }}" class="btn btn-primary d-flex align-items-center">
-                      <span class="mdi mdi-plus me-2"></span>
-                      Tambah Part
-                    </a>
-                  </div>
-                  
-                  <div class="d-flex justify-content-between align-items-end mb-3">
-                    <div class="dt-length">
-                      <label for="dt-length-0" class="form-label small mb-1">Show entries</label>
-                      <select name="part_length" aria-controls="partTable" class="form-select form-select-sm" id="dt-length-0" style="width: auto;" onchange="changeRecordsPerPage(this.value)">
-                        <option value="10" {{ $records_per_page == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ $records_per_page == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ $records_per_page == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ $records_per_page == 100 ? 'selected' : '' }}>100</option>
-                      </select>
-                    </div>
-                    <div class="dt-search">
-                      <label for="dt-search-0" class="form-label small mb-1">Search : </label>
-                      <input type="search" class="form-control form-control-sm" id="dt-search-0" placeholder="" aria-controls="partTable" style="width: 190px;">
                     </div>
                   </div>
 
                   <!-- NOTIFIKASI SUCCESS GLOBAL -->
                   @if (!empty($success) && $success_type === 'global')
-                      <div class="alert-global success">
-                          <i class="mdi mdi-check-circle"></i>
-                          {{ $success }}
-                      </div>
+                    <div class="alert-global success mb-4">
+                      <i class="mdi mdi-check-circle"></i>
+                      {{ $success }}
+                    </div>
                   @endif
 
                   <!-- NOTIFIKASI ERROR GLOBAL -->
                   @if (!empty($error) && $error_type === 'global')
-                      <div class="alert-global error">
-                          <i class="mdi mdi-alert-circle"></i>
-                          {{ $error }}
-                      </div>
-                  @endif
-
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-sm table-xs" id="partTable">
-                      <thead>
-                        <tr>
-                          <th style="width: 10%;">No.</th>
-                          <th style="width: 25%;">Nomor Part</th>
-                          <th style="width: 25%;">Nama Part</th>
-                          <th style="width: 20%;">Harga</th>
-                          <th class="text-center" style="width: 20%;">Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @if ($parts->count() > 0)
-                          @php
-                            $counter = ($parts->currentPage() - 1) * $parts->perPage() + 1;
-                          @endphp
-                          @foreach ($parts as $part)
-                            <tr>
-                              <td>{{ $counter }}</td>
-                              <td class="py-1">{{ $part->nopart }}</td>
-                              <td>{{ $part->namapart }}</td>
-                              <td>Rp {{ number_format($part->harga, 0, ',', '.') }}</td>
-                              <td class="text-center">
-                                <div class="d-flex gap-2 justify-content-center">
-                                  <!-- TAMBAHKAN BUTTON EDIT DAN HAPUS DI SINI -->
-                                  <a href="{{ route('part.edit', urlencode($part->nopart)) }}" class="btn btn-sm btn-outline-primary">
-                                      <i class="bi bi-pencil-fill"></i>
-                                  </a>
-                                  <button type="button" class="btn btn-sm btn-outline-danger" 
-                                      data-bs-toggle="modal" 
-                                      data-bs-target="#deleteModal{{ preg_replace('/[^a-zA-Z0-9]/', '', $part->nopart) }}">
-                                      <i class="bi bi-trash-fill"></i>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            @php $counter++ @endphp
-                          @endforeach
-                        @else
-                          <tr>
-                            <td colspan="5" class="text-center py-3">Tidak ada data part</td>
-                          </tr>
-                        @endif
-
-                        <!-- Row untuk pesan pencarian tidak ditemukan -->
-                        <tr id="no-search-result" style="display: none;">
-                          <td colspan="5" class="text-center py-3">Tidak ada data part yang sesuai dengan pencarian</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- MODAL KONFIRMASI HAPUS - DI LUAR TABLE -->
-                  @if ($parts->count() > 0)
-                    @foreach ($parts as $part)
-                      @php
-                          // Buat ID modal yang aman (hapus karakter khusus)
-                          $modalId = preg_replace('/[^a-zA-Z0-9]/', '', $part->nopart);
-                      @endphp
-                      <div class="modal fade" id="deleteModal{{ $modalId }}" 
-                          tabindex="-1" 
-                          aria-labelledby="deleteModalLabel" 
-                          aria-hidden="true">
-                          <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 0 auto;">
-                              <div class="modal-content" style="max-height: 200px; overflow: hidden;">
-                                  <div class="modal-header py-2" style="border-bottom: 1px solid #dee2e6;">
-                                      <h6 class="modal-title fs-6 m-0">Konfirmasi Hapus</h6>
-                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body py-2">
-                                      <p class="m-0">Yakin ingin menghapus part <strong>{{ $part->namapart }}</strong>?</p>
-                                  </div>
-                                  <div class="modal-footer py-2" style="border-top: 1px solid #ffffffff;">
-                                      <button type="button" class="btn btn-secondary btn-sm rounded-1" data-bs-dismiss="modal">Batal</button>
-                                      <form action="{{ route('part.destroy', urlencode($part->nopart)) }}" method="POST" style="display: inline;">
-                                          @csrf
-                                          @method('DELETE')
-                                          <button type="submit" class="btn btn-primary btn-sm rounded-1">Hapus</button>
-                                      </form>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                    @endforeach
-                  @endif
-
-                  <nav aria-label="Page navigation example" class="mt-3">
-                    <ul class="pagination justify-content-end mb-0">
-                      <!-- Previous Button -->
-                      <li class="page-item {{ $parts->currentPage() <= 1 ? 'disabled' : '' }}">
-                        <a class="page-link" href="{{ $parts->previousPageUrl() }}&records_per_page={{ $records_per_page }}" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                        </a>
-                      </li>
-                      
-                      <!-- Page Numbers -->
-                      @for ($i = 1; $i <= $parts->lastPage(); $i++)
-                        <li class="page-item {{ $parts->currentPage() == $i ? 'active' : '' }}">
-                          <a class="page-link" href="{{ $parts->url($i) }}&records_per_page={{ $records_per_page }}">{{ $i }}</a>
-                        </li>
-                      @endfor
-                      
-                      <!-- Next Button -->
-                      <li class="page-item {{ $parts->currentPage() >= $parts->lastPage() ? 'disabled' : '' }}">
-                        <a class="page-link" href="{{ $parts->nextPageUrl() }}&records_per_page={{ $records_per_page }}" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                        </a>
-                      </li>
-                    </ul>
-                    
-                    <!-- Info Pagination -->
-                    <div class="text-muted text-left mt-2 small" data-current="{{ $parts->count() }}" data-total="{{ $parts->total() }}">
-                      Menampilkan {{ $parts->count() }} dari {{ $parts->total() }} data
+                    <div class="alert-global error mb-4">
+                      <i class="mdi mdi-alert-circle"></i>
+                      {{ $error }}
                     </div>
-                  </nav>
+                  @endif
+
+                  {{-- ERROR VALIDASI --}}
+                  @if ($errors->any())
+                    <div class="alert alert-danger mb-4">
+                      <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                          <li>{{ $error }}</li>
+                        @endforeach
+                      </ul>
+                    </div>
+                  @endif
+
+                  <form action="{{ route('part.store') }}" method="POST">
+                    @csrf
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="nopart" class="form-label">Nomor Part</label>
+                          <input type="text"
+                                 name="nopart"
+                                 id="nopart"
+                                 class="form-control @error('nopart') is-invalid @enderror"
+                                 placeholder="Masukkan nomor part"
+                                 value="{{ old('nopart') }}"
+                                 required>
+                          @error('nopart')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                          @enderror
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="namapart" class="form-label">Nama Part</label>
+                          <input type="text"
+                                 name="namapart"
+                                 id="namapart"
+                                 class="form-control @error('namapart') is-invalid @enderror"
+                                 placeholder="Masukkan nama part"
+                                 value="{{ old('namapart') }}"
+                                 required>
+                          @error('namapart')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                          @enderror
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label for="harga" class="form-label">Harga</label>
+                          <input type="number"
+                                 name="harga"
+                                 id="harga"
+                                 class="form-control @error('harga') is-invalid @enderror"
+                                 placeholder="Masukkan harga part"
+                                 value="{{ old('harga') }}"
+                                 min="0"
+                                 step="100"
+                                 required>
+                          @error('harga')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                          @enderror
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      <button type="submit" class="btn btn-primary me-2">
+                        Submit
+                      </button>
+                      <a href="{{ route('part.index') }}" class="btn btn-secondary">
+                        Cancel
+                      </a>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -533,130 +464,28 @@
   <script src="{{ asset('js/todolist.js') }}"></script>
 
   <script>
-  // Cek pathname dan tambahkan class active jika mengandung 'part'
-  if (window.location.pathname.includes('part')) {
-      document.querySelector('.nav-item.active')?.classList.remove('active');
-      document.querySelector('.nav-item a[href*="part"]')?.parentElement.classList.add('active');
-  }
-  </script>
-
-  <script>
-  // Function untuk mengubah jumlah records per page
-  function changeRecordsPerPage(recordsPerPage) {
-      const urlParams = new URLSearchParams(window.location.search);
-      urlParams.set('records_per_page', recordsPerPage);
-      urlParams.set('page', 1); // Reset ke halaman 1
-      window.location.href = '?' + urlParams.toString();
-  }
-
-  // Search functionality for PART
+  // HAPUS NOTIFIKASI GLOBAL SETELAH 5 DETIK
   document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('dt-search-0');
-      const table = document.querySelector('table');
-      const tbody = table.querySelector('tbody');
-      const dataRows = [];
-      const noSearchResult = document.getElementById('no-search-result');
-      const paginationInfo = document.querySelector('.text-muted.text-left.mt-2.small');
-      const paginationNav = document.querySelector('.pagination');
-      
-      // Kumpulkan hanya baris data
-      tbody.querySelectorAll('tr').forEach(row => {
-          if (row.id !== 'no-search-result' && !row.querySelector('td')?.textContent.includes('Tidak ada data')) {
-              dataRows.push(row);
+    const globalAlerts = document.querySelectorAll('.alert-global');
+    
+    globalAlerts.forEach(function(alert) {
+      setTimeout(() => {
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateY(-10px)';
+        alert.style.transition = 'all 0.3s ease-out';
+        
+        setTimeout(() => {
+          if (alert.parentNode) {
+            alert.remove();
           }
-      });
-
-      searchInput.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase().trim();
-          let foundCount = 0;
-          
-          // Reset semua baris data
-          dataRows.forEach(row => {
-              row.style.display = '';
-          });
-          
-          // Sembunyikan pesan tidak ditemukan
-          if (noSearchResult) {
-              noSearchResult.style.display = 'none';
-          }
-          
-          if (searchTerm !== '') {
-              dataRows.forEach(row => {
-                  const cells = row.querySelectorAll('td');
-                  let found = false;
-                  
-                  // Cari di kolom: nopart (index 1), namapart (index 2), harga (index 3)
-                  for (let i = 1; i < 4; i++) {
-                      if (cells[i]) {
-                          let cellText = cells[i].textContent.toLowerCase();
-                          
-                          // Untuk kolom harga, hapus format Rupiah sebelum mencari
-                          if (i === 3) { // Kolom harga
-                              cellText = cellText.replace(/rp\s?|\./g, '').trim();
-                          }
-                          
-                          if (cellText.includes(searchTerm)) {
-                              found = true;
-                              foundCount++;
-                              break;
-                          }
-                      }
-                  }
-                  
-                  row.style.display = found ? '' : 'none';
-              });
-              
-              if (foundCount === 0) {
-                  if (noSearchResult) {
-                      noSearchResult.style.display = '';
-                  }
-                  if (paginationInfo) {
-                      paginationInfo.textContent = `Menampilkan 0 dari 0 data`;
-                  }
-              } else {
-                  if (paginationInfo) {
-                      paginationInfo.textContent = `Menampilkan ${foundCount} dari ${foundCount} data`;
-                  }
-              }
-              
-              if (paginationNav) {
-                  paginationNav.style.display = 'none';
-              }
-              
-          } else {
-              if (paginationInfo) {
-                  const currentCount = parseInt(paginationInfo.dataset.current);
-                  const totalRecords = parseInt(paginationInfo.dataset.total);
-                  paginationInfo.textContent = `Menampilkan ${currentCount} dari ${totalRecords} data`;
-              }
-              
-              if (paginationNav) {
-                  paginationNav.style.display = 'flex';
-              }
-          }
-      });
+        }, 300);
+      }, 5000);
+    });
+    
+    // Focus on first input field
+    document.getElementById('nopart')?.focus();
   });
   </script>
 
-  <script>
-  // HAPUS NOTIFIKASI GLOBAL SETELAH 8 DETIK
-  document.addEventListener('DOMContentLoaded', function() {
-      const globalAlerts = document.querySelectorAll('.alert-global');
-      
-      globalAlerts.forEach(function(alert) {
-          setTimeout(() => {
-              alert.style.opacity = '0';
-              alert.style.transform = 'translateY(-10px)';
-              alert.style.transition = 'all 0.3s ease-out';
-              
-              setTimeout(() => {
-                  if (alert.parentNode) {
-                      alert.remove();
-                  }
-              }, 300);
-          }, 5000);
-      });
-  });
-  </script>
 </body>
 </html>

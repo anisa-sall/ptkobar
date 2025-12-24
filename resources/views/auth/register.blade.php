@@ -102,7 +102,6 @@
                             <option value="" disabled selected>Pilih Departemen</option>
                             <option value="Marketing" {{ old('departemen') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
                             <option value="PPIC" {{ old('departemen') == 'PPIC' ? 'selected' : '' }}>PPIC (Production Planning & Inventory Control)</option>
-                            <option value="Finance" {{ old('departemen') == 'Finance' ? 'selected' : '' }}>Finance</option>
                             <option value="Manager" {{ old('departemen') == 'Manager' ? 'selected' : '' }}>Manager</option>
                         </select>
                         <x-input-error :messages="$errors->get('departemen')" class="mt-2" />
