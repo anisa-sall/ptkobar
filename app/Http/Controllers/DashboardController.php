@@ -256,33 +256,44 @@ class DashboardController extends Controller
         }
 
         // ===== 6. Performance Line Chart - Surat Jalan per hari =====
-        // Ambil data untuk minggu ini (Monday-Sunday)
-        $current_week_start = Carbon::now()->startOfWeek()->format('Y-m-d');
-        $current_week_end = Carbon::now()->endOfWeek()->format('Y-m-d');
-        
-        // Ambil data untuk minggu lalu
-        $last_week_start = Carbon::now()->subWeek()->startOfWeek()->format('Y-m-d');
-        $last_week_end = Carbon::now()->subWeek()->endOfWeek()->format('Y-m-d');
-        
-        // Array hari dalam seminggu
+        Carbon::setLocale('en');
+
+        $current_week_start = Carbon::now()->startOfWeek(); // Senin
+        $current_week_end = Carbon::now()->endOfWeek();     // Minggu
+
+        $last_week_start = Carbon::now()->subWeek()->startOfWeek();
+        $last_week_end = Carbon::now()->subWeek()->endOfWeek();
+
+
         $days_of_week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        $full_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
-        // Data untuk minggu ini
+
+
+        $carbon_to_chart_mapping = [
+            7 => 0, // Sunday (Carbon 7) -> Chart index 0
+            1 => 1, // Monday (Carbon 1) -> Chart index 1
+            2 => 2, // Tuesday -> Chart index 2
+            3 => 3, // Wednesday -> Chart index 3
+            4 => 4, // Thursday -> Chart index 4
+            5 => 5, // Friday -> Chart index 5
+            6 => 6, // Saturday -> Chart index 6
+        ];
+
+        // **PERBAIKAN 4: Query dengan DAYOFWEEK (lebih reliable)**
         $current_week_data = array_fill(0, 7, 0);
         $currentWeekData = DB::table('suratjalan')
             ->select(
-                DB::raw('DAYNAME(tglpengiriman) as hari'),
+                DB::raw('DAYOFWEEK(tglpengiriman) as day_num'), // 1=Sunday, 2=Monday, ..., 7=Saturday
                 DB::raw('COUNT(*) as jumlah')
             )
-            ->whereBetween('tglpengiriman', [$current_week_start, $current_week_end])
-            ->groupBy(DB::raw('DAYNAME(tglpengiriman)'))
+            ->whereBetween('tglpengiriman', [$current_week_start->format('Y-m-d'), $current_week_end->format('Y-m-d')])
+            ->groupBy(DB::raw('DAYOFWEEK(tglpengiriman)'))
             ->get();
 
         foreach ($currentWeekData as $row) {
-            $index = array_search($row->hari, $full_days);
-            if ($index !== false) {
-                $current_week_data[$index] = (int)$row->jumlah;
+            $day_num = (int)$row->day_num;
+            if (isset($carbon_to_chart_mapping[$day_num])) {
+                $chart_index = $carbon_to_chart_mapping[$day_num];
+                $current_week_data[$chart_index] = (int)$row->jumlah;
             }
         }
 
@@ -290,19 +301,24 @@ class DashboardController extends Controller
         $last_week_data = array_fill(0, 7, 0);
         $lastWeekData = DB::table('suratjalan')
             ->select(
-                DB::raw('DAYNAME(tglpengiriman) as hari'),
+                DB::raw('DAYOFWEEK(tglpengiriman) as day_num'),
                 DB::raw('COUNT(*) as jumlah')
             )
-            ->whereBetween('tglpengiriman', [$last_week_start, $last_week_end])
-            ->groupBy(DB::raw('DAYNAME(tglpengiriman)'))
+            ->whereBetween('tglpengiriman', [$last_week_start->format('Y-m-d'), $last_week_end->format('Y-m-d')])
+            ->groupBy(DB::raw('DAYOFWEEK(tglpengiriman)'))
             ->get();
 
         foreach ($lastWeekData as $row) {
-            $index = array_search($row->hari, $full_days);
-            if ($index !== false) {
-                $last_week_data[$index] = (int)$row->jumlah;
+            $day_num = (int)$row->day_num;
+            if (isset($carbon_to_chart_mapping[$day_num])) {
+                $chart_index = $carbon_to_chart_mapping[$day_num];
+                $last_week_data[$chart_index] = (int)$row->jumlah;
             }
         }
+
+        // **PERBAIKAN 6: Format range tanggal**
+        $current_week_range = $current_week_start->format('j M') . ' - ' . $current_week_end->format('j M');
+        $last_week_range = $last_week_start->format('j M') . ' - ' . $last_week_end->format('j M');
 
         // ===== 7. Data Stok Kritis =====
         // Total semua item stok
