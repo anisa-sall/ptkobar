@@ -55,6 +55,10 @@ public function index(Request $request)
         ->leftJoin('users', 'suratjalan.idpetugas', '=', 'users.id')
         ->orderBy('suratjalan.created_at', 'desc')
         ->paginate($records_per_page);
+    $suratjalans->getCollection()->transform(function ($sj) {
+    $sj->can_delete = !$sj->details()->exists();
+    return $sj;
+});
     
     return view('suratjalan.index', compact(
         'namapetugas',
@@ -144,6 +148,21 @@ public function index(Request $request)
                 }
             }
         }
+
+        $pos = [];
+
+        foreach ($po_options as $nopo => $label) {
+            if (str_contains($label, 'PARTIAL')) {
+                $status = 'PARTIAL';
+            } else {
+                $status = 'OPEN';
+            }
+
+            $pos[] = [
+                'nopo' => $nopo,
+                'status' => $status
+            ];
+        }
         
         return view('suratjalan.create', compact(
             'namapetugas',
@@ -154,7 +173,7 @@ public function index(Request $request)
             'customers',
             'kendaraans',
             'selected_customer',
-            'po_options'
+            'pos'
         ));
     }
 
@@ -342,6 +361,33 @@ public function update(Request $request, $id)
         DB::rollBack();
         return back()->withInput()
             ->with('error', $e->getMessage());
+    }
+}
+
+public function destroy($id)
+{
+    DB::beginTransaction();
+
+    try {
+        $suratjalan = SuratJalan::where('nosuratjalan', $id)->firstOrFail();
+
+        // CEGAH HAPUS JIKA ADA DETAIL
+        if ($suratjalan->details()->exists()) {
+            return redirect()->route('suratjalan.index')
+                ->with('error', 'Surat Jalan tidak dapat dihapus karena masih memiliki detail');
+        }
+
+        $suratjalan->delete();
+
+        DB::commit();
+
+        return redirect()->route('suratjalan.index')
+            ->with('success', 'Surat Jalan berhasil dihapus');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->route('suratjalan.index')
+            ->with('error', 'Gagal menghapus Surat Jalan: ' . $e->getMessage());
     }
 }
 

@@ -332,7 +332,9 @@ if ($poDetail) {
             
            
             // Update detail surat jalan
-            $detail->update([
+            DetailSuratJalan::where('nosuratjalan', $nosuratjalan)
+            ->where('nopart', $nopart)
+            ->update([
                 'quantity' => $request->quantity,
                 'keterangan' => $request->keterangan
             ]);

@@ -345,7 +345,7 @@
           
           @if(isset($menuAccess['suratjalan']) && in_array($departemen, $menuAccess['suratjalan']))
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('suratjalan.index') }}">
               <i class="menu-icon mdi mdi-file-find"></i>
               <span class="menu-title">Surat Jalan</span>
             </a>
