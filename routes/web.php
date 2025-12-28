@@ -11,6 +11,8 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\DetailPoController;
 use App\Http\Controllers\SuratJalanController;
 use App\Http\Controllers\DetailSuratJalanController;
+use App\Http\Controllers\PrintSuratJalanController;
+
 
 // ========== ROUTE UTAMA ==========
 Route::get('/', function () {
@@ -95,27 +97,56 @@ Route::prefix('purchase-order')->name('po.')->group(function () {
     Route::put('/{nopo}', [PurchaseOrderController::class, 'update'])->name('update')->where('nopo', '.*');
     Route::delete('/{nopo}', [PurchaseOrderController::class, 'destroy'])->name('destroy')->where('nopo', '.*');
 })->middleware('auth');
+ // ========== PRINT ROUTES ==========
+    // Gunakan path yang berbeda dari surat-jalan prefix
+     Route::get('/surat-jalan/{nosuratjalan}/print', function($nosuratjalan) {
+        // Decode URL karena parameter mengandung slash (/)
+        $decoded = urldecode($nosuratjalan);
+        return redirect()->route('suratjalan.print.preview', $decoded);
+    })->where('nosuratjalan', '.*')->name('suratjalan.print.redirect');
     
-    // Surat Jalan routes
+    Route::get('/surat-jalan/{nosuratjalan}/pdf', function($nosuratjalan) {
+        $decoded = urldecode($nosuratjalan);
+        return redirect()->route('suratjalan.pdf', $decoded);
+    })->where('nosuratjalan', '.*')->name('suratjalan.pdf.redirect');
+    
+    // ========== ROUTE PRINT BARU ==========
+    Route::get('/cetak-surat-jalan/{nosuratjalan}', [PrintSuratJalanController::class, 'preview'])
+        ->name('suratjalan.print.preview')
+        ->where('nosuratjalan', '.*');
+    
+    Route::get('/pdf-surat-jalan/{nosuratjalan}', [PrintSuratJalanController::class, 'pdf'])
+        ->name('suratjalan.pdf')
+        ->where('nosuratjalan', '.*');
+    
+    Route::get('/print-surat-jalan/{nosuratjalan}', [PrintSuratJalanController::class, 'print'])
+        ->name('suratjalan.print-only')
+        ->where('nosuratjalan', '.*');
+ // Route detail surat jalan
+    Route::prefix('surat-jalan/{nosuratjalan}/detail')->name('detailsuratjalan.')
+        ->where(['nosuratjalan' => '.*'])  // ← INI YANG PERLU DITAMBAH!
+        ->group(function () {
+            Route::get('/', [DetailSuratJalanController::class, 'index'])->name('index');
+            Route::get('/create', [DetailSuratJalanController::class, 'create'])->name('create');
+            Route::post('/', [DetailSuratJalanController::class, 'store'])->name('store');
+            Route::get('/{nopart}/edit', [DetailSuratJalanController::class, 'edit'])->name('edit');
+            Route::put('/{nopart}', [DetailSuratJalanController::class, 'update'])->name('update');
+            Route::delete('/{nopart}', [DetailSuratJalanController::class, 'destroy'])->name('destroy');
+        })->middleware('auth');
+       // Surat Jalan routes
     Route::prefix('surat-jalan')->name('suratjalan.')->group(function () {
-        Route::get('/', [SuratJalanController::class, 'index'])->name('index');
-        Route::get('/create', [SuratJalanController::class, 'create'])->name('create');
-        Route::post('/', [SuratJalanController::class, 'store'])->name('store');
-        Route::get('/{surat_jalan}', [SuratJalanController::class, 'show'])->name('show');
-        Route::get('/{surat_jalan}/edit', [SuratJalanController::class, 'edit'])->name('edit');
-        Route::put('/{surat_jalan}', [SuratJalanController::class, 'update'])->name('update');
-        Route::delete('/{surat_jalan}', [SuratJalanController::class, 'destroy'])->name('destroy');
-        Route::get('/{surat_jalan}/cetak', [SuratJalanController::class, 'cetak'])->name('cetak');
-        Route::get('/get-pos/{idcustomer}', [SuratJalanController::class, 'getPosByCustomer'])->name('get-pos');
-    })->middleware('auth');
-
-    Route::prefix('surat-jalan/{nosuratjalan}/detail')->name('detailsuratjalan.')->group(function () {
-        Route::get('/', [DetailSuratJalanController::class, 'index'])->name('index');
-        Route::get('/create', [DetailSuratJalanController::class, 'create'])->name('create');
-        Route::post('/', [DetailSuratJalanController::class, 'store'])->name('store');
-        Route::get('/{nopart}/edit', [DetailSuratJalanController::class, 'edit'])->name('edit');
-        Route::put('/{nopart}', [DetailSuratJalanController::class, 'update'])->name('update');
-        Route::delete('/{nopart}', [DetailSuratJalanController::class, 'destroy'])->name('destroy');
+    Route::get('/', [SuratJalanController::class, 'index'])->name('index');
+    Route::get('/create', [SuratJalanController::class, 'create'])->name('create');
+    Route::post('/', [SuratJalanController::class, 'store'])->name('store');
+    
+    // ROUTE AJAX ← PASTIKAN INI SEBELUM WILDCARD!
+    Route::get('/getPosByCustomer/{idcustomer}', [SuratJalanController::class, 'getPosByCustomer'])->name('getPosByCustomer');
+    
+    // ROUTE UTAMA SURAT JALAN dengan constraint .* ← SETELAH ROUTE SPESIFIK
+    Route::get('/{nosuratjalan}/edit', [SuratJalanController::class, 'edit'])->name('edit')->where('nosuratjalan', '.*');
+    Route::get('/{nosuratjalan}/cetak', [SuratJalanController::class, 'cetak'])->name('cetak')->where('nosuratjalan', '.*');
+    Route::put('/{nosuratjalan}', [SuratJalanController::class, 'update'])->name('update')->where('nosuratjalan', '.*');
+    Route::delete('/{nosuratjalan}', [SuratJalanController::class, 'destroy'])->name('destroy')->where('nosuratjalan', '.*');
     })->middleware('auth');
     
 });
@@ -173,11 +204,10 @@ Route::prefix('')->group(function () {
                 ->middleware(['auth', 'throttle:6,1'])
                 ->name('verification.send');
 
-    // Password Confirmation Routes...
-    Route::get('confirm-password', [App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
-                ->name('password.confirm')
-                ->middleware('auth');
-
     Route::post('confirm-password', [App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store'])
                 ->middleware('auth');
+
+    // Tambahkan route ini dalam grup suratjalan
+// Route::get('/suratjalan/get-po-by-customer', [SuratJalanController::class, 'getPOByCustomer'])
+   // ->name('suratjalan.getPOByCustomer');
 });

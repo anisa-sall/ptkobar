@@ -10,14 +10,15 @@ class DetailSuratJalan extends Model
     use HasFactory;
 
     protected $table = 'detailsuratjalan';
-    protected $primaryKey = null;
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+    public $incrementing = true;
     public $timestamps = false;
 
     protected $fillable = [
         'nosuratjalan',
         'nopart',
-        'quantity'
+        'quantity',
+        'keterangan'
     ];
 
     /**

@@ -18,75 +18,56 @@ class SuratJalanController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        // Get user data
-        $user = Auth::user();
-        $namapetugas = $user->name ?? 'Petugas';
-        $email = $user->email ?? 'email@example.com';
-        $departemen = $user->departemen ?? '';
-        
-        // Konfigurasi pagination
-        $records_per_page = $request->get('records_per_page', 10);
-        
-        // Query utama Surat Jalan
-        $suratjalans = SuratJalan::select(
-                'suratjalan.nosuratjalan',
-                'suratjalan.nopo',
-                'customer.namacustomer',
-                'suratjalan.tglpengiriman',
-                'kendaraan.namakendaraan',
-                'users.name as namapetugas'
-            )
-            ->leftJoin('customer', 'suratjalan.idcustomer', '=', 'customer.idcustomer')
-            ->leftJoin('users', 'suratjalan.idpetugas', '=', 'users.id')
-            ->leftJoin('kendaraan', 'suratjalan.nopol', '=', 'kendaraan.nopol')
-            ->orderBy('suratjalan.tglpengiriman', 'desc')
-            ->paginate($records_per_page);
-        
-        // Get session messages
-        $success = Session::get('success');
-        $success_type = Session::get('success_type');
-        $error = Session::get('error');
-        $error_type = Session::get('error_type');
-        
-        // Clear session messages
-        Session::forget(['success', 'success_type', 'error', 'error_type']);
-        
-        // Menu access configuration
-        $menuAccess = [
-            'customer' => ['Marketing', 'Manager'],
-            'part' => ['Marketing', 'Manager'],
-            'petugas' => ['Manager'],
-            'kendaraan' => ['PPIC', 'Manager'],
-            'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-            'suratjalan' => ['PPIC', 'Finance', 'Manager']
-        ];
-        
-        $namadepan = explode(' ', $namapetugas)[0];
-        
-        return view('suratjalan.index', compact(
-            'suratjalans',
-            'records_per_page',
-            'success',
-            'success_type',
-            'error',
-            'error_type',
-            'namapetugas',
-            'email',
-            'departemen',
-            'namadepan',
-            'menuAccess'
-        ));
-    }
+    // ... method index() tetap sama ...
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+public function index(Request $request)
+{
+    // Get user data
+    $user = Auth::user();
+    $namapetugas = $user->name ?? 'Petugas';
+    $email = $user->email ?? 'email@example.com';
+    $departemen = $user->departemen ?? '';
+    $namadepan = explode(' ', $namapetugas)[0];
+    
+    // Menu access configuration
+    $menuAccess = [
+        'customer' => ['Marketing', 'Manager'],
+        'part' => ['Marketing', 'Manager'],
+        'petugas' => ['Manager'],
+        'kendaraan' => ['PPIC', 'Manager'],
+        'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
+        'suratjalan' => ['PPIC', 'Finance', 'Manager']
+    ];
+    
+    // Get records per page from request or use default
+    $records_per_page = $request->get('records_per_page', 10);
+    
+    // Get all Surat Jalan with related data - TAMBAHKAN JOIN DISINI!
+    $suratjalans = SuratJalan::select('suratjalan.*', 
+        'customer.namacustomer',
+        'kendaraan.namakendaraan',
+        'users.name as namapetugas')
+        ->leftJoin('customer', 'suratjalan.idcustomer', '=', 'customer.idcustomer')
+        ->leftJoin('kendaraan', 'suratjalan.nopol', '=', 'kendaraan.nopol')
+        ->leftJoin('users', 'suratjalan.idpetugas', '=', 'users.id')
+        ->orderBy('suratjalan.created_at', 'desc')
+        ->paginate($records_per_page);
+    
+    return view('suratjalan.index', compact(
+        'namapetugas',
+        'email',
+        'departemen',
+        'namadepan',
+        'menuAccess',
+        'suratjalans',
+        'records_per_page'
+    ));
+}
+
+    public function create(Request $request)
     {
         // Get user data
         $user = Auth::user();
@@ -109,25 +90,59 @@ class SuratJalanController extends Controller
         $customers = Customer::orderBy('namacustomer')->get();
         $kendaraans = Kendaraan::orderBy('namakendaraan')->get();
         
-        // Initialize variables
-        $selected_customer = request('idcustomer');
-        $pos = [];
+        // Initialize PO options
+        $po_options = [];
+        $selected_customer = old('idcustomer', $request->input('idcustomer'));
         
         // Jika ada customer yang dipilih, ambil PO-nya yang berstatus OPEN atau PARTIAL
         if ($selected_customer) {
-            $pos = PurchaseOrder::where('idcustomer', $selected_customer)
-                ->get()
-                ->filter(function($po) {
-                    // Filter hanya PO dengan status OPEN atau PARTIAL
-                    return in_array($po->status, ['OPEN', 'PARTIAL']);
-                })
-                ->map(function($po) {
-                    return [
-                        'nopo' => $po->nopo,
-                        'status' => $po->status
-                    ];
-                })
-                ->values();
+            // AMBIL SEMUA PO DARI CUSTOMER
+            $allPos = PurchaseOrder::where('idcustomer', $selected_customer)->get();
+            
+            // FILTER SECARA MANUAL BERDASARKAN STATUS YANG DIHITUNG
+            foreach ($allPos as $po) {
+                $nopo = $po->nopo;
+                
+                // HITUNG STATUS PO (PERSIS SEPERTI DI PHP NATIVE)
+                $status_data = DB::select("
+                    SELECT 
+                        COUNT(*) as total_detail,
+                        SUM(CASE WHEN total_dikirim = 0 THEN 1 ELSE 0 END) as total_open,
+                        SUM(CASE WHEN total_dikirim = quantity THEN 1 ELSE 0 END) as total_closed
+                    FROM (
+                        SELECT 
+                            dp.quantity,
+                            COALESCE((
+                                SELECT SUM(dsj.quantity) 
+                                FROM detailsuratjalan dsj 
+                                JOIN suratjalan sj ON dsj.nosuratjalan = sj.nosuratjalan 
+                                WHERE sj.nopo = dp.nopo AND dsj.nopart = dp.nopart
+                            ), 0) as total_dikirim
+                        FROM detailpo dp 
+                        WHERE dp.nopo = ?
+                    ) as detail_status
+                ", [$nopo]);
+                
+                if (!empty($status_data)) {
+                    $status = $status_data[0];
+                    
+                    // TENTUKAN STATUS PO
+                    if ($status->total_detail == 0) {
+                        $status_po = 'OPEN';
+                    } elseif ($status->total_closed == $status->total_detail) {
+                        $status_po = 'CLOSED';
+                    } elseif ($status->total_open == $status->total_detail) {
+                        $status_po = 'OPEN';
+                    } else {
+                        $status_po = 'PARTIAL';
+                    }
+                    
+                    // Hanya tambahkan PO jika statusnya OPEN atau PARTIAL (bukan CLOSED)
+                    if (in_array($status_po, ['OPEN', 'PARTIAL'])) {
+                        $po_options[$nopo] = $nopo . ' (Status: ' . $status_po . ')';
+                    }
+                }
+            }
         }
         
         return view('suratjalan.create', compact(
@@ -139,7 +154,7 @@ class SuratJalanController extends Controller
             'customers',
             'kendaraans',
             'selected_customer',
-            'pos'
+            'po_options'
         ));
     }
 
@@ -148,7 +163,12 @@ class SuratJalanController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
+        // Jika ini adalah form partial submit (hanya untuk menampilkan PO)
+        if ($request->input('submit_type') == 'partial') {
+            return redirect()->route('suratjalan.create')->withInput();
+        }
+        
+        // Validasi input untuk submit final
         $request->validate([
             'nosuratjalan' => 'required|unique:suratjalan,nosuratjalan',
             'idcustomer' => 'required|exists:customer,idcustomer',
@@ -160,11 +180,46 @@ class SuratJalanController extends Controller
         DB::beginTransaction();
         
         try {
-            // Cek apakah PO sudah CLOSED
-            $po = PurchaseOrder::where('nopo', $request->nopo)->first();
+            // Cek apakah PO sudah CLOSED (logika persis seperti PHP native)
+            $nopo = $request->nopo;
             
-            if ($po->status === 'CLOSED') {
-                throw new \Exception("Tidak dapat membuat Surat Jalan karena PO No. {$request->nopo} sudah berstatus CLOSED. Semua part sudah dikirim.");
+            $status_data = DB::select("
+                SELECT 
+                    COUNT(*) as total_detail,
+                    SUM(CASE WHEN total_dikirim = 0 THEN 1 ELSE 0 END) as total_open,
+                    SUM(CASE WHEN total_dikirim = quantity THEN 1 ELSE 0 END) as total_closed
+                FROM (
+                    SELECT 
+                        dp.quantity,
+                        COALESCE((
+                            SELECT SUM(dsj.quantity) 
+                            FROM detailsuratjalan dsj 
+                            JOIN suratjalan sj ON dsj.nosuratjalan = sj.nosuratjalan 
+                            WHERE sj.nopo = dp.nopo AND dsj.nopart = dp.nopart
+                        ), 0) as total_dikirim
+                    FROM detailpo dp 
+                    WHERE dp.nopo = ?
+                ) as detail_status
+            ", [$nopo]);
+            
+            if (!empty($status_data)) {
+                $status = $status_data[0];
+                
+                // Tentukan status PO
+                if ($status->total_detail == 0) {
+                    $status_po = 'OPEN';
+                } elseif ($status->total_closed == $status->total_detail) {
+                    $status_po = 'CLOSED';
+                } elseif ($status->total_open == $status->total_detail) {
+                    $status_po = 'OPEN';
+                } else {
+                    $status_po = 'PARTIAL';
+                }
+                
+                // Jika PO sudah CLOSED, tidak bisa buat Surat Jalan
+                if ($status_po === 'CLOSED') {
+                    throw new \Exception("Tidak dapat membuat Surat Jalan karena PO No. $nopo sudah berstatus CLOSED. Semua part sudah dikirim.");
+                }
             }
             
             // Create new Surat Jalan
@@ -194,202 +249,155 @@ class SuratJalanController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($nosuratjalan)
-    {
-        // Get Surat Jalan dengan relasi
-        $suratjalan = SuratJalan::with(['customer', 'kendaraan', 'petugas', 'purchaseOrder'])
-            ->where('nosuratjalan', $nosuratjalan)
-            ->first();
-            
-        if (!$suratjalan) {
-            Session::flash('error', 'Surat Jalan tidak ditemukan');
-            Session::flash('error_type', 'global');
-            return redirect()->route('suratjalan.index');
-        }
-        
-        // Get user data
-        $user = Auth::user();
-        $namapetugas = $user->name ?? 'Petugas';
-        $email = $user->email ?? 'email@example.com';
-        $departemen = $user->departemen ?? '';
-        $namadepan = explode(' ', $namapetugas)[0];
-        
-        // Menu access configuration
-        $menuAccess = [
-            'customer' => ['Marketing', 'Manager'],
-            'part' => ['Marketing', 'Manager'],
-            'petugas' => ['Manager'],
-            'kendaraan' => ['PPIC', 'Manager'],
-            'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-            'suratjalan' => ['PPIC', 'Finance', 'Manager']
-        ];
-        
-        return view('suratjalan.show', compact(
-            'suratjalan',
-            'namapetugas',
-            'email',
-            'departemen',
-            'namadepan',
-            'menuAccess'
-        ));
+/**
+ * Show the form for editing the specified resource.
+ */
+/**
+ * Show the form for editing the specified resource.
+ */
+public function edit($id)
+{
+    // Get user data
+    $user = Auth::user();
+    $namapetugas = $user->name ?? 'Petugas';
+    $email = $user->email ?? 'email@example.com';
+    $departemen = $user->departemen ?? '';
+    $namadepan = explode(' ', $namapetugas)[0];
+    
+    // Menu access configuration
+    $menuAccess = [
+        'customer' => ['Marketing', 'Manager'],
+        'part' => ['Marketing', 'Manager'],
+        'petugas' => ['Manager'],
+        'kendaraan' => ['PPIC', 'Manager'],
+        'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
+        'suratjalan' => ['PPIC', 'Finance', 'Manager']
+    ];
+    
+    // Find the Surat Jalan (gunakan nosuratjalan)
+    $suratjalan = SuratJalan::where('nosuratjalan', $id)->first();
+    
+    if (!$suratjalan) {
+        Session::flash('error', 'Data Surat Jalan tidak ditemukan');
+        Session::flash('error_type', 'global');
+        return redirect()->route('suratjalan.index');
     }
+    
+    // Get data for dropdowns
+    $customers = Customer::orderBy('namacustomer')->get();
+    $kendaraans = Kendaraan::orderBy('namakendaraan')->get();
+    
+    // Get PO options (semua PO dari customer ini)
+    $pos = PurchaseOrder::where('idcustomer', $suratjalan->idcustomer)
+        ->orderBy('nopo')
+        ->get();
+    
+    return view('suratjalan.edit', compact(
+        'namapetugas',
+        'email',
+        'departemen',
+        'namadepan',
+        'menuAccess',
+        'suratjalan',
+        'customers',
+        'kendaraans',
+        'pos'
+    ));
+}
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($nosuratjalan)
-    {
-        // Get Surat Jalan
-        $suratjalan = SuratJalan::where('nosuratjalan', $nosuratjalan)->first();
-        
-        if (!$suratjalan) {
-            Session::flash('error', 'Surat Jalan tidak ditemukan');
-            Session::flash('error_type', 'global');
-            return redirect()->route('suratjalan.index');
-        }
-        
-        // Get user data
-        $user = Auth::user();
-        $namapetugas = $user->name ?? 'Petugas';
-        $email = $user->email ?? 'email@example.com';
-        $departemen = $user->departemen ?? '';
-        $namadepan = explode(' ', $namapetugas)[0];
-        
-        // Menu access configuration
-        $menuAccess = [
-            'customer' => ['Marketing', 'Manager'],
-            'part' => ['Marketing', 'Manager'],
-            'petugas' => ['Manager'],
-            'kendaraan' => ['PPIC', 'Manager'],
-            'po' => ['Marketing', 'PPIC', 'Finance', 'Manager'],
-            'suratjalan' => ['PPIC', 'Finance', 'Manager']
-        ];
-        
-        // Get data for dropdowns
-        $customers = Customer::orderBy('namacustomer')->get();
-        $kendaraans = Kendaraan::orderBy('namakendaraan')->get();
-        $pos = PurchaseOrder::where('idcustomer', $suratjalan->idcustomer)->get();
-        
-        return view('suratjalan.edit', compact(
-            'suratjalan',
-            'customers',
-            'kendaraans',
-            'pos',
-            'namapetugas',
-            'email',
-            'departemen',
-            'namadepan',
-            'menuAccess'
-        ));
-    }
+/**
+ * Update the specified resource in storage.
+ */
+/**
+ * Update the specified resource in storage.
+ */
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'nopo' => 'required|exists:po,nopo',
+        'idcustomer' => 'required|exists:customer,idcustomer',
+        'nopol' => 'required|exists:kendaraan,nopol',
+        'tglpengiriman' => 'required|date'
+    ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $nosuratjalan)
-    {
-        // Validasi input
-        $request->validate([
-            'idcustomer' => 'required|exists:customer,idcustomer',
-            'nopo' => 'required|exists:po,nopo',
-            'tglpengiriman' => 'required|date',
-            'nopol' => 'required|exists:kendaraan,nopol'
+    DB::beginTransaction();
+
+    try {
+        $suratjalan = SuratJalan::where('nosuratjalan', $id)->firstOrFail();
+
+        $suratjalan->update([
+            'nopo' => $request->nopo,
+            'idcustomer' => $request->idcustomer,
+            'nopol' => $request->nopol,
+            'tglpengiriman' => $request->tglpengiriman,
+            'idpetugas' => Auth::id()
         ]);
-        
-        try {
-            // Cek apakah Surat Jalan ada
-            $suratjalan = SuratJalan::where('nosuratjalan', $nosuratjalan)->first();
-            if (!$suratjalan) {
-                throw new \Exception('Surat Jalan tidak ditemukan');
-            }
-            
-            // Update Surat Jalan
-            $suratjalan->update([
-                'idcustomer' => $request->idcustomer,
-                'nopo' => $request->nopo,
-                'tglpengiriman' => $request->tglpengiriman,
-                'nopol' => $request->nopol
-            ]);
-            
-            Session::flash('success', 'Surat Jalan berhasil diperbarui');
-            Session::flash('success_type', 'global');
-            
-            return redirect()->route('suratjalan.index');
-        } catch (\Exception $e) {
-            Session::flash('error', 'Gagal memperbarui Surat Jalan: ' . $e->getMessage());
-            Session::flash('error_type', 'global');
-            
-            return back()->withInput();
-        }
+
+        DB::commit();
+
+        return redirect()->route('suratjalan.index')
+            ->with('success', 'Surat Jalan berhasil diperbarui');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withInput()
+            ->with('error', $e->getMessage());
     }
+}
 
     /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($nosuratjalan)
-    {
-        try {
-            $suratjalan = SuratJalan::where('nosuratjalan', $nosuratjalan)->first();
-            
-            if (!$suratjalan) {
-                Session::flash('error', 'Surat Jalan tidak ditemukan');
-                Session::flash('error_type', 'global');
-                return redirect()->route('suratjalan.index');
-            }
-            
-            $suratjalan->delete();
-            
-            Session::flash('success', 'Surat Jalan berhasil dihapus');
-            Session::flash('success_type', 'global');
-            
-            return redirect()->route('suratjalan.index');
-        } catch (\Exception $e) {
-            Session::flash('error', 'Gagal menghapus Surat Jalan: ' . $e->getMessage());
-            Session::flash('error_type', 'global');
-            
-            return redirect()->route('suratjalan.index');
-        }
-    }
-
-    /**
-     * Cetak Surat Jalan
-     */
-    public function cetak($nosuratjalan)
-    {
-        $suratjalan = SuratJalan::with(['customer', 'kendaraan', 'petugas', 'purchaseOrder'])
-            ->where('nosuratjalan', $nosuratjalan)
-            ->first();
-            
-        if (!$suratjalan) {
-            Session::flash('error', 'Surat Jalan tidak ditemukan');
-            Session::flash('error_type', 'global');
-            return redirect()->route('suratjalan.index');
-        }
-        
-        return view('suratjalan.cetak', compact('suratjalan'));
-    }
-
-    /**
-     * Get available POs for selected customer
+     * Get available POs for selected customer (untuk AJAX)
      */
     public function getPosByCustomer($idcustomer)
     {
-        $pos = PurchaseOrder::where('idcustomer', $idcustomer)
-            ->get()
-            ->filter(function($po) {
-                return in_array($po->status, ['OPEN', 'PARTIAL']);
-            })
-            ->map(function($po) {
-                return [
-                    'nopo' => $po->nopo,
-                    'status' => $po->status
-                ];
-            })
-            ->values();
+        // Logika persis seperti di method create()
+        $po_options = [];
+        $allPos = PurchaseOrder::where('idcustomer', $idcustomer)->get();
+        
+        foreach ($allPos as $po) {
+            $nopo = $po->nopo;
             
-        return response()->json($pos);
+            $status_data = DB::select("
+                SELECT 
+                    COUNT(*) as total_detail,
+                    SUM(CASE WHEN total_dikirim = 0 THEN 1 ELSE 0 END) as total_open,
+                    SUM(CASE WHEN total_dikirim = quantity THEN 1 ELSE 0 END) as total_closed
+                FROM (
+                    SELECT 
+                        dp.quantity,
+                        COALESCE((
+                            SELECT SUM(dsj.quantity) 
+                            FROM detailsuratjalan dsj 
+                            JOIN suratjalan sj ON dsj.nosuratjalan = sj.nosuratjalan 
+                            WHERE sj.nopo = dp.nopo AND dsj.nopart = dp.nopart
+                        ), 0) as total_dikirim
+                    FROM detailpo dp 
+                    WHERE dp.nopo = ?
+                ) as detail_status
+            ", [$nopo]);
+            
+            if (!empty($status_data)) {
+                $status = $status_data[0];
+                
+                if ($status->total_detail == 0) {
+                    $status_po = 'OPEN';
+                } elseif ($status->total_closed == $status->total_detail) {
+                    $status_po = 'CLOSED';
+                } elseif ($status->total_open == $status->total_detail) {
+                    $status_po = 'OPEN';
+                } else {
+                    $status_po = 'PARTIAL';
+                }
+                
+                if (in_array($status_po, ['OPEN', 'PARTIAL'])) {
+                    $po_options[] = [
+                        'nopo' => $nopo,
+                        'status' => $status_po
+                    ];
+                }
+            }
+        }
+        
+        return response()->json($po_options);
     }
 }
