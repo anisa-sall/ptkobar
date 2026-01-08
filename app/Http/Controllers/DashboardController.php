@@ -19,6 +19,9 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $percentage_change = 0;
+        $percentage_class = 'text-success';
+        $has_comparison_data = false;
         
         // Inisialisasi variabel dengan data user atau default
         $namapetugas = "Petugas";
